@@ -89,7 +89,7 @@ model Category {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  posts         Post[] 
+  posts         Post[]
 }
 
 model Post {
@@ -101,11 +101,11 @@ model Post {
   contact           String
   photos            Json?
   userId            Int
-  status            String          @default("Draft") //Pending Publish
+  status            String          @default("Pending") //Pending Published Rejected
   isActive          Boolean         @default(true)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
   user              User            @relation(fields: [userId] , references: [id])
-  categories        Category[]   
+  categories        Category[]  
 }

@@ -31,10 +31,10 @@ export class MunicipalityService {
         code: 400,
       };
 
-    const newMunicipality = await this.db.municipality.create({
+    await this.db.municipality.create({
       data: {
         name: data.name,
-        cityId: cityExist!.id,
+        cityId: cityExist.id,
       },
     });
 
@@ -95,7 +95,7 @@ export class MunicipalityService {
         code: 400,
       };
 
-    const editMunicipality = await this.db.municipality.update({
+    await this.db.municipality.update({
       where: { id: isMunicipality.id },
       data: {
         name: data.name,
@@ -118,7 +118,7 @@ export class MunicipalityService {
         code: 404,
       };
 
-    const deleteMunicipality = await this.db.municipality.update({
+    await this.db.municipality.update({
       where: { id: isMunicipality.id },
       data: { isActive: false },
     });

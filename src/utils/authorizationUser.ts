@@ -7,7 +7,7 @@ export const adminAuthorization = (roleId: number) => {
   return false;
 };
 
-export const superAdminAuthorization = async (roleId: number) => {
+export const superAdminAuthorization = (roleId: number) => {
   if (roleId === ROLE.ADMIN) {
     return true;
   }

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import { ConfigService } from '@nestjs/config';
@@ -29,7 +29,7 @@ export class UserService {
     });
 
     if (!adminExist) {
-      const admin = await this.db.user.create({
+      await this.db.user.create({
         data: {
           fullName: this.configService.get<string>('ADMIN_FULLNAME') as string,
           email: adminEmail,
@@ -56,7 +56,7 @@ export class UserService {
 
     const hashPassword = await bcrypt.hash(data.password, 10);
 
-    const newUser = await this.db.user.create({
+    await this.db.user.create({
       data: {
         fullName: data.fullName,
         email: data.email ?? null,
@@ -100,19 +100,21 @@ export class UserService {
   }
 
   async getAllAdmin(page: number, limit: number) {
-    const pageNumber = page;
-    const limitNumber = limit;
-    const skip = (pageNumber - 1) * limitNumber;
+    const pageNumber: any = page;
+    const limitNumber: number = limit;
+    const skip: any = (pageNumber - 1) * limitNumber;
 
     const totalAdmin = await this.db.user.count({
-      where: { isActive: true, roleId: ROLE.ADMIN },
+      where: { roleId: ROLE.ADMIN },
     });
 
-    const totalPages = Math.ceil(totalAdmin / limitNumber);
+    const totalPages: number = Math.ceil(totalAdmin / limitNumber);
 
     const allAdmin = await this.db.user.findMany({
       orderBy: { createdAt: 'desc' },
       where: { roleId: ROLE.ADMIN },
+      skip,
+      take: Number(limit),
       select: {
         id: true,
         fullName: true,
@@ -127,6 +129,9 @@ export class UserService {
       return {
         message: 'List empty',
         code: 200,
+        currentPage: Number(pageNumber),
+        totalPages,
+        totalAdmin,
         data: [],
       };
 
@@ -161,7 +166,7 @@ export class UserService {
         code: 400,
       };
 
-    const editAdmin = await this.db.user.update({
+    await this.db.user.update({
       where: { id: isAdmin.id },
       data: {
         fullName: data.fullName,
@@ -187,7 +192,7 @@ export class UserService {
         code: 404,
       };
 
-    const deleteAdmin = await this.db.user.update({
+    await this.db.user.update({
       where: { id: isAdmin.id },
       data: { isActive: false },
     });
@@ -209,7 +214,7 @@ export class UserService {
         code: 404,
       };
 
-    const deleteAdmin = await this.db.user.update({
+    await this.db.user.update({
       where: { id: isAdmin.id },
       data: { isActive: true },
     });
@@ -217,6 +222,52 @@ export class UserService {
     return {
       message: 'Admin unlocked',
       code: 200,
+    };
+  }
+
+  async getAllUsers(page: number, limit: number) {
+    const pageNumber: number = page;
+    const limitNumber: number = limit;
+    const skip: number = (pageNumber - 1) * limitNumber;
+
+    const totalUsers = await this.db.user.count({
+      where: { isActive: true, roleId: ROLE.USER },
+    });
+
+    const totalPages: number = Math.ceil(totalUsers / limitNumber);
+
+    const allUsers = await this.db.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      where: { roleId: ROLE.USER, isActive: true },
+      skip,
+      take: Number(limit),
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        photo: true,
+        isActive: true,
+      },
+    });
+
+    if (!allUsers.length)
+      return {
+        message: 'List empty',
+        code: 200,
+        currentPage: Number(pageNumber),
+        totalPages,
+        totalUsers,
+        data: [],
+      };
+
+    return {
+      message: 'Users list',
+      code: 200,
+      currentPage: Number(pageNumber),
+      totalPages,
+      totalUsers,
+      data: allUsers,
     };
   }
 }

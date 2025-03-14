@@ -18,7 +18,7 @@ export class CityService {
         code: 400,
       };
 
-    const newCity = await this.db.city.create({
+    await this.db.city.create({
       data: {
         name: data.name,
       },
@@ -69,21 +69,21 @@ export class CityService {
   }
 
   async getAllCity(page: number, limit: number) {
-    const pageNumber = page;
-    const limitNumber = limit;
-    const skip = (pageNumber - 1) * limitNumber;
+    const pageNumber: any = page;
+    const limitNumber: number = limit;
+    const skip: any = (pageNumber - 1) * limitNumber;
 
-    const totalCities = await this.db.city.count({
+    const totalCities: number = await this.db.city.count({
       where: { isActive: true },
     });
 
-    const totalPages = Math.ceil(totalCities / limitNumber);
+    const totalPages: number = Math.ceil(totalCities / limitNumber);
 
     const allCity = await this.db.city.findMany({
       orderBy: { createdAt: 'desc' },
       where: { isActive: true },
       skip,
-      take: Number(limitNumber),
+      take: Number(limit),
       select: {
         id: true,
         name: true,
@@ -110,6 +110,9 @@ export class CityService {
       return {
         message: 'List empty',
         code: 200,
+        currentPage: Number(pageNumber),
+        totalPages,
+        totalCities,
         data: [],
       };
 
@@ -144,7 +147,7 @@ export class CityService {
         code: 400,
       };
 
-    const editCity = await this.db.city.update({
+    await this.db.city.update({
       where: { id: isCity.id },
       data: {
         name: data.name,
@@ -167,7 +170,7 @@ export class CityService {
         code: 404,
       };
 
-    const deleteCity = await this.db.city.update({
+    await this.db.city.update({
       where: { id: isCity.id },
       data: { isActive: false },
     });

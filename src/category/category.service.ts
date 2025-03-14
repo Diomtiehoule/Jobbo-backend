@@ -22,7 +22,7 @@ export class CategoryService {
         code: 400,
       };
 
-    const newCategory = await this.db.category.create({
+    await this.db.category.create({
       data: {
         title: data.title,
         description: data.description,
@@ -59,21 +59,21 @@ export class CategoryService {
   }
 
   async getAllCategories(page: number, limit: number) {
-    const pageNumber = page;
-    const limitNumber = limit;
-    const skip = (pageNumber - 1) * limitNumber;
+    const pageNumber: any = page;
+    const limitNumber: number = limit;
+    const skip: any = (pageNumber - 1) * limitNumber;
 
     const totalCategories = await this.db.category.count({
       where: { isActive: true },
     });
 
-    const totalPages = Math.ceil(totalCategories / limitNumber);
+    const totalPages: number = Math.ceil(totalCategories / limitNumber);
 
     const allCategories = await this.db.category.findMany({
       orderBy: { createdAt: 'desc' },
       where: { isActive: true },
       skip,
-      take: Number(limitNumber),
+      take: Number(limit),
       select: {
         id: true,
         title: true,
@@ -119,7 +119,7 @@ export class CategoryService {
         code: 400,
       };
 
-    const editCategory = await this.db.category.update({
+    await this.db.category.update({
       where: { id: isCategory.id },
       data: {
         title: data.title,
@@ -143,7 +143,7 @@ export class CategoryService {
         code: 404,
       };
 
-    const deleteSuburb = await this.db.category.update({
+    await this.db.category.update({
       where: { id: isCategory.id },
       data: { isActive: false },
     });

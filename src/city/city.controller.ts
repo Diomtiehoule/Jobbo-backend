@@ -15,6 +15,15 @@ import { adminAuthorization } from 'src/utils/authorizationUser';
 import { CityService } from './city.service';
 import { ApiResponse, getSchemaPath } from '@nestjs/swagger';
 
+interface User {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+  roleId: number;
+}
+
 @Controller('city')
 export class CityController {
   constructor(private readonly cityService: CityService) {}
@@ -26,9 +35,9 @@ export class CityController {
       $ref: getSchemaPath(CreateCityDto),
     },
   })
-  createCity(@Request() req, @Body() credential: CreateCityDto) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  createCity(@Request() req: any, @Body() credential: CreateCityDto) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     if (!isAdmin)
       return {
@@ -39,7 +48,7 @@ export class CityController {
   }
 
   @Get('/get-city')
-  getCity(@Request() req) {
+  getCity(@Request() req: any) {
     const cityId = Number(req.query.id);
     return this.cityService.getCity(cityId);
   }
@@ -48,7 +57,7 @@ export class CityController {
   getAllCity(@Request() req) {
     const { limit = 10, page = 1 } = req.query;
 
-    return this.cityService.getAllCity(page, limit);
+    return this.cityService.getAllCity(+page, +limit);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -58,9 +67,9 @@ export class CityController {
       $ref: getSchemaPath(UpdateCityDto),
     },
   })
-  editCity(@Request() req, @Body() data: UpdateCityDto) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  editCity(@Request() req: any, @Body() data: UpdateCityDto) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const cityId = Number(req.query.id);
     if (!isAdmin)
@@ -73,9 +82,9 @@ export class CityController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/delete-city')
-  deleteCity(@Request() req) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  deleteCity(@Request() req: any) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const cityId = Number(req.query.id);
 

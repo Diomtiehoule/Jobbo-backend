@@ -14,15 +14,24 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/createCategory.dto';
 import { UpdateCategoryDto } from './dto/updateCategory.dto';
 
+interface User {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+  roleId: number;
+}
+
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('/create-category')
-  createCategory(@Request() req, @Body() credential: CreateCategoryDto) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  createCategory(@Request() req: any, @Body() credential: CreateCategoryDto) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     if (!isAdmin)
       return {
@@ -33,22 +42,22 @@ export class CategoryController {
   }
 
   @Get('/get-category')
-  getCategory(@Request() req) {
+  getCategory(@Request() req: any) {
     const categoryId = Number(req.query.id);
     return this.categoryService.getCategory(categoryId);
   }
 
   @Get('/get-all-categories')
-  getAllCategories(@Request() req) {
+  getAllCategories(@Request() req: any) {
     const { limit = 10, page = 1 } = req.query;
     return this.categoryService.getAllCategories(page, limit);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('/edit-category')
-  editCategory(@Request() req, @Body() data: UpdateCategoryDto) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  editCategory(@Request() req: any, @Body() data: UpdateCategoryDto) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const categoryId = Number(req.query.id);
     if (!isAdmin)
@@ -61,9 +70,9 @@ export class CategoryController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/delete-category')
-  deleteCategory(@Request() req) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  deleteCategory(@Request() req: any) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const disctrictId = Number(req.query.id);
 

@@ -3,20 +3,24 @@ import {
   Body,
   Get,
   Post,
-  Patch,
-  Delete,
   Put,
-  Param,
   UseGuards,
   Request,
-  Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/middleware/auth.middleware';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UserService } from './user.service';
 import { adminAuthorization } from 'src/utils/authorizationUser';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { LoginUserDto } from './dto/loginUser.dto';
+
+interface User {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+  roleId: number;
+}
 
 @Controller('users')
 export class UserController {
@@ -24,9 +28,9 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/create-admin')
-  createAdmin(@Request() req, @Body() credential: CreateUserDto) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  createAdmin(@Request() req: any, @Body() credential: CreateUserDto) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     if (!isAdmin)
       return {
@@ -38,11 +42,11 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/get-admin')
-  getAdmin(@Request() req) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  getAdmin(@Request() req: any) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
-    const adminId = Number(req.query.id);
+    const adminId: number = Number(req.query.id);
 
     if (!isAdmin)
       return {
@@ -54,10 +58,10 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/get-all-admin')
-  getAllAdmin(@Request() req) {
+  getAllAdmin(@Request() req: any) {
     const { limit = 10, page = 1 } = req.query;
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     if (!isAdmin)
       return {
@@ -68,12 +72,27 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('/edit-admin')
-  editAdmin(@Request() req, @Body() data: UpdateUserDto) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  @Get('/get-all-users')
+  getAllUsers(@Request() req: any) {
+    const { limit = 10, page = 1 } = req.query;
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
-    const adminId = Number(req.query.id);
+    if (!isAdmin)
+      return {
+        message: 'Forbidden',
+        code: 403,
+      };
+    return this.userService.getAllUsers(page, limit);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/edit-admin')
+  editAdmin(@Request() req: any, @Body() data: UpdateUserDto) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
+
+    const adminId: number = Number(req.query.id);
     if (!isAdmin)
       return {
         message: 'Forbidden',
@@ -84,11 +103,11 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Put('/lock-admin')
-  lockAdmin(@Request() req) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  lockAdmin(@Request() req: any) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
-    const adminId = Number(req.query.id);
+    const adminId: number = Number(req.query.id);
 
     if (!isAdmin)
       return {
@@ -100,11 +119,11 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Put('/unlock-admin')
-  unLockAdmin(@Request() req) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  unLockAdmin(@Request() req: any) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
-    const adminId = Number(req.query.id);
+    const adminId: number = Number(req.query.id);
 
     if (!isAdmin)
       return {

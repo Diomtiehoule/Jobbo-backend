@@ -9,6 +9,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Jobbo API Documentation')
     .setDescription("This's the documentation of all Api for Jobbo project")

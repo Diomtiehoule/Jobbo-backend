@@ -14,15 +14,24 @@ import { SuburbService } from './suburb.service';
 import { adminAuthorization } from 'src/utils/authorizationUser';
 import { JwtAuthGuard } from 'src/middleware/auth.middleware';
 
-@Controller('Suburb')
+interface User {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+  roleId: number;
+}
+
+@Controller('suburb')
 export class SuburbController {
   constructor(private readonly SuburbService: SuburbService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('/create-suburb')
-  createSuburb(@Request() req, @Body() credential: CreateSuburbDto) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  createSuburb(@Request() req: any, @Body() credential: CreateSuburbDto) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const municipalityId = Number(req.query.id);
 
@@ -35,16 +44,16 @@ export class SuburbController {
   }
 
   @Get('/get-suburb')
-  getSuburb(@Request() req) {
+  getSuburb(@Request() req: any) {
     const SuburbId = Number(req.query.id);
     return this.SuburbService.getSuburb(SuburbId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('/edit-suburb')
-  editSuburb(@Request() req, @Body() data: UpdateSuburbDto) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  editSuburb(@Request() req: any, @Body() data: UpdateSuburbDto) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const SuburbId = Number(req.query.id);
     if (!isAdmin)
@@ -57,9 +66,9 @@ export class SuburbController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/delete-suburb')
-  deleteSuburb(@Request() req) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  deleteSuburb(@Request() req: any) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const disctrictId = Number(req.query.id);
 

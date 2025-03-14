@@ -8,12 +8,20 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common';
-import { Injectable } from '@nestjs/common';
 import { CreateMunicipalityDto } from './dto/createMunicipality.dto';
 import { JwtAuthGuard } from 'src/middleware/auth.middleware';
 import { UpdateMunicipalityDto } from './dto/updateMunicipality.dto';
 import { MunicipalityService } from './municipality.service';
 import { adminAuthorization } from 'src/utils/authorizationUser';
+
+interface User {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+  roleId: number;
+}
 
 @Controller('municipality')
 export class MunicpalityController {
@@ -22,11 +30,11 @@ export class MunicpalityController {
   @UseGuards(JwtAuthGuard)
   @Post('/create-municipality')
   createMunicipalite(
-    @Request() req,
+    @Request() req: any,
     @Body() credential: CreateMunicipalityDto,
   ) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const cityId = Number(req.query.id);
 
@@ -39,16 +47,16 @@ export class MunicpalityController {
   }
 
   @Get('/get-municipality')
-  getMunicipality(@Request() req) {
+  getMunicipality(@Request() req: any) {
     const cityId = Number(req.query.id);
     return this.municipalite.getMunicipality(cityId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('/edit-municipality')
-  editMunicipality(@Request() req, @Body() data: UpdateMunicipalityDto) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  editMunicipality(@Request() req: any, @Body() data: UpdateMunicipalityDto) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const cityId = Number(req.query.id);
     if (!isAdmin)
@@ -61,9 +69,9 @@ export class MunicpalityController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/delete-municipality')
-  deleteMunicipality(@Request() req) {
-    const userAuth = req.user;
-    const isAdmin = adminAuthorization(userAuth.roleId);
+  deleteMunicipality(@Request() req: any) {
+    const userAuth: User = req.user;
+    const isAdmin: boolean = adminAuthorization(userAuth.roleId);
 
     const cityId = Number(req.query.id);
 

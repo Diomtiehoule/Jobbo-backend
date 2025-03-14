@@ -31,7 +31,7 @@ export class SuburbService {
         code: 400,
       };
 
-    const newSuburb = await this.db.suburb.create({
+    await this.db.suburb.create({
       data: {
         name: data.name,
         municipalityId: municipalityExist.id,
@@ -87,7 +87,7 @@ export class SuburbService {
         code: 400,
       };
 
-    const editMunicipality = await this.db.suburb.update({
+    await this.db.suburb.update({
       where: { id: isSuburb.id },
       data: {
         name: data.name,
@@ -110,7 +110,7 @@ export class SuburbService {
         code: 404,
       };
 
-    const deleteSuburb = await this.db.suburb.update({
+    await this.db.suburb.update({
       where: { id: isSuburb.id },
       data: { isActive: false },
     });

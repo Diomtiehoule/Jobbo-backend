@@ -3,3 +3,9 @@ export enum ROLE {
   ADMIN = 2,
   USER = 3,
 }
+
+export enum STATUS {
+  PENDING = 'Pending',
+  PUBLISH = 'Published',
+  REJECTED = 'Rejected',
+}
